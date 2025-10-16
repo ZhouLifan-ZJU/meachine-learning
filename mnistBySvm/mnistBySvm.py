@@ -96,8 +96,8 @@ def main():
     主函数
     """
     # 数据路径 - 请根据实际情况修改
-    train_path = 'E:\\课程作业\\机器学习\\手写字体识别\\MNIST\\train'
-    test_path = 'E:\\课程作业\\机器学习\\手写字体识别\\MNIST\\test'
+    train_path = 'E:\\course-code\\meachine-learning\\dataset\\MNIST\\train'
+    test_path = 'E:\\course-code\\meachine-learning\\dataset\\MNIST\\test'
 
     print("正在加载MNIST数据集...")
     x_train, y_train, x_test, y_test = load_mnist_data(train_path, test_path)
