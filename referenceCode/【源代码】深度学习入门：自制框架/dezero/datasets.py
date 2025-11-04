@@ -47,7 +47,7 @@ def get_spiral(train=True):
     num_data, num_class, input_dim = 100, 3, 2
     data_size = num_class * num_data
     x = np.zeros((data_size, input_dim), dtype=np.float32)
-    t = np.zeros(data_size, dtype=np.int)
+    t = np.zeros(data_size, dtype=int)
 
     for j in range(num_class):
         for i in range(num_data):
@@ -82,7 +82,10 @@ class MNIST(Dataset):
         super().__init__(train, transform, target_transform)
 
     def prepare(self):
-        url = 'http://yann.lecun.com/exdb/mnist/'
+        # url = 'http://yann.lecun.com/exdb/mnist/'
+
+        # 原链接不可用，此处更换MNIST可用的下载链接
+        url = 'https://storage.googleapis.com/tensorflow/tf-keras-datasets/'
         train_files = {'target': 'train-images-idx3-ubyte.gz',
                        'label': 'train-labels-idx1-ubyte.gz'}
         test_files = {'target': 't10k-images-idx3-ubyte.gz',
@@ -137,7 +140,7 @@ class CIFAR10(Dataset):
         filepath = get_file(url)
         if self.train:
             self.data = np.empty((50000, 3 * 32 * 32))
-            self.label = np.empty((50000), dtype=np.int)
+            self.label = np.empty((50000), dtype=int)
             for i in range(5):
                 self.data[i * 10000:(i + 1) * 10000] = self._load_data(
                     filepath, i + 1, 'train')
@@ -231,7 +234,7 @@ class CIFAR100(CIFAR10):
     def labels(label_type='fine'):
         coarse_labels = dict(enumerate(['aquatic mammals','fish','flowers','food containers','fruit and vegetables','household electrical device','household furniture','insects','large carnivores','large man-made outdoor things','large natural outdoor scenes','large omnivores and herbivores','medium-sized mammals','non-insect invertebrates','people','reptiles','small mammals','trees','vehicles 1','vehicles 2']))
         fine_labels = []
-        return fine_labels if label_type is 'fine' else coarse_labels
+        return fine_labels if label_type == 'fine' else coarse_labels
 
 
 

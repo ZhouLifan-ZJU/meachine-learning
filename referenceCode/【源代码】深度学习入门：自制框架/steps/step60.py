@@ -63,7 +63,8 @@ with dezero.no_grad():
     for x in xs:
         x = np.array(x).reshape(1, 1)
         y = model(x)
-        pred_list.append(float(y.data))
+        # pred_list.append(float(y.data))
+        pred_list.append(y.data.item())  # 修改此处解决数值转换问题，这里使用显示提取
 
 plt.plot(np.arange(len(xs)), xs, label='y=cos(x)')
 plt.plot(np.arange(len(xs)), pred_list, label='predict')
