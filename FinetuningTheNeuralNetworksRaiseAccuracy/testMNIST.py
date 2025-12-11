@@ -14,52 +14,64 @@ from nn_applygradient import nn_applygradient
 from function import sigmoid, softmax
 
 
-def save_variable(v,filename):
-    f=open(filename,'wb')
-    pickle.dump(v,f)
+def save_variable(v, filename):
+    f = open(filename, 'wb')
+    pickle.dump(v, f)
     f.close()
     return filename
 
+
 def load_variable(filename):
-    f=open(filename,'rb')
-    r=pickle.load(f)
+    f = open(filename, 'rb')
+    r = pickle.load(f)
     f.close()
     return r
 
-#Training
+
+# =========================
+# Training
+# =========================
 dir_path = "../dataset/MNIST/train"
 file_ls = os.listdir(dir_path)
 data = np.zeros((60000, 784), dtype=float)
 label = np.zeros((60000, 10), dtype=float)
 flag = 0
+
 for dir in file_ls:
-    files = os.listdir(dir_path+'\\'+dir)
+    files = os.listdir(dir_path + '\\' + dir)
     for file in files:
-        filename = dir_path+'\\'+dir+'\\'+file
+        filename = dir_path + '\\' + dir + '\\' + file
         img = mpimg.imread(filename)
-        data[flag,:] = np.reshape(img, -1)/255
-        label[flag,int(dir)] = 1.0
-        flag+=1
+        data[flag, :] = np.reshape(img, -1) / 255
+        label[flag, int(dir)] = 1.0
+        flag += 1
 
 ratioTraining = 0.95
-xTraining, xValidation, yTraining, yValidation = train_test_split(data, label, test_size=1 - ratioTraining, random_state=0)  # 随机分配数据集
-
+xTraining, xValidation, yTraining, yValidation = train_test_split(
+    data, label, test_size=1 - ratioTraining, random_state=0
+)  # 随机分配数据集
 
 if os.path.exists('storedNN.npz'):
     nn = load_variable('storedNN.npz')
 else:
-    nn = NN(layer=[784,400,169,49,10], batch_normalization = 1, active_function='relu', batch_size = 50, learning_rate=0.01, optimization_method='Adam',objective_function='Cross Entropy')
+    nn = NN(layer=[784, 400, 169, 49, 10],
+            batch_normalization=1,
+            active_function='relu',
+            batch_size=50,
+            learning_rate=0.01,
+            optimization_method='Adam',
+            objective_function='Cross Entropy')
 
 epoch = 0
 maxAccuracy = 0
 totalAccuracy = []
 totalCost = []
 maxEpoch = 100
+
 while epoch < maxEpoch:
     epoch += 1
     nn = nn_train(nn, xTraining, yTraining)
     totalCost.append(sum(nn.cost.values()) / len(nn.cost.values()))
-    # wrongs, predictedLabel, accuracy = nn_test(nn, xValidation, yValidation)
     wrongs, predictedLabel, accuracy, _ = nn_test(nn, xValidation, yValidation)
     totalAccuracy.append(accuracy)
     if accuracy > maxAccuracy:
@@ -68,30 +80,37 @@ while epoch < maxEpoch:
         save_variable(nn, 'storedNN.npz')
     cost = totalCost[epoch - 1]
     print('Epoch:', epoch)
-    print('Accuracy:',accuracy)
-    print('Cost:',cost)
+    print('Accuracy:', accuracy)
+    print('Cost:', cost)
 
-#Testing
+# =========================
+# Testing
+# =========================
 dir_path = '../dataset/MNIST/test'
 file_ls = os.listdir(dir_path)
 xTesting = np.zeros((10000, 784), dtype=float)
 yTesting = np.zeros((10000, 10), dtype=float)
 flag = 0
+
 for dir in file_ls:
-    files = os.listdir(dir_path+'\\'+dir)
+    files = os.listdir(dir_path + '\\' + dir)
     for file in files:
-        filename = dir_path+'\\'+dir+'\\'+file
+        filename = dir_path + '\\' + dir + '\\' + file
         img = mpimg.imread(filename)
-        xTesting[flag,:] = np.reshape(img, -1)/255
-        yTesting[flag,int(dir)] = 1.0
-        flag+=1
+        xTesting[flag, :] = np.reshape(img, -1) / 255
+        yTesting[flag, int(dir)] = 1.0
+        flag += 1
+
 if os.path.exists('storedNN.npz'):
     storedNN = load_variable('storedNN.npz')
-    # wrongs, predictedLabel, accuracy = nn_test(storedNN, xTesting, yTesting)
-    wrongs, predictedLabel, accuracy, _ = nn_test(nn, xValidation, yValidation)
+    # 在测试集上评估：使用 storedNN、xTesting、yTesting
+    wrongs, predictedLabel, accuracy, _ = nn_test(storedNN, xTesting, yTesting)
     print('Accuracy on Test set:', accuracy)
-    confusionMatrix = np.zeros((10,10),dtype=int)
-    for i in range(len(predictedLabel)):
-        trueLabel = np.argmax(yTesting[i,:])
-        confusionMatrix[trueLabel,predictedLabel[i]]+=1
+
+    confusionMatrix = np.zeros((10, 10), dtype=int)
+    # 这里必须保证预测与测试标签一一对应
+    for i in range(len(yTesting)):
+        trueLabel = np.argmax(yTesting[i, :])
+        confusionMatrix[trueLabel, predictedLabel[i]] += 1
+
     print('The Confusion Matrix is:\n', confusionMatrix)

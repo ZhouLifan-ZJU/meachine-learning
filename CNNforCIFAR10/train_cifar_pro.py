@@ -143,7 +143,7 @@ def parse_args():
     p.add_argument('--weight-decay', default=5e-4, type=float)
     p.add_argument('--workers', default=0, type=int)
     p.add_argument('--mixup-alpha', default=0.2, type=float)
-    p.add_argument('--checkpoint-dir', default='./checkpoints', type=str)
+    p.add_argument('--checkpoint-dir', default='./checkpointsPro', type=str)
     p.add_argument('--device', default=None, type=str)
     p.add_argument('--print-freq', default=100, type=int)
     p.add_argument('--grad-clip', default=5.0, type=float)
